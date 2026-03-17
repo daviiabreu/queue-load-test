@@ -1,0 +1,27 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+producer/producer
+consumer/consumer
+
+# Test
+*.test
+*.out
+
+# Load test results
+loadtest/results/
+
+# IDE
+.idea/
+.vscode/
+.claude/
+*.swp
+
+# OS
+.DS_Store
+
+# Env
+.env
