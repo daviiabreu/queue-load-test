@@ -25,3 +25,8 @@ loadtest/results/
 
 # Env
 .env
+
+# Firmware build artifacts and SDK
+firmware/build/
+firmware/pico-sdk/
+firmware/.cache/

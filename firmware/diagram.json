@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "author": "Pico W Telemetry",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-pi-pico-w",
+      "id": "pico",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic1",
+      "top": -280,
+      "left": 60,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": 400,
+      "left": -280,
+      "attrs": {
+        "color": "green"
+      }
+    },
+    {
+      "type": "wokwi-pir-motion-sensor",
+      "id": "pir1",
+      "top": 400,
+      "left": -60,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot1",
+      "top": 400,
+      "left": 220,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": 400,
+      "left": 500,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    ["pico:GP16", "btn1:1.l", "green", ["v100", "h-120"]],
+    ["pico:GND.1", "btn1:2.l", "black", ["v120", "h-140"]],
+
+    ["pico:GP17", "pir1:OUT", "blue", ["v140", "h-40"]],
+    ["pico:3V3", "pir1:VCC", "red", ["v160", "h-20"]],
+    ["pico:GND.2", "pir1:GND", "black", ["v180", "h0"]],
+
+    ["pico:GP26", "pot1:SIG", "orange", ["v100", "h60"]],
+    ["pico:3V3", "pot1:VCC", "red", ["v120", "h80"]],
+    ["pico:GND.3", "pot1:GND", "black", ["v140", "h100"]],
+
+    ["pico:GP27", "ldr1:AO", "yellow", ["v160", "h140"]],
+    ["pico:3V3", "ldr1:VCC", "red", ["v180", "h160"]],
+    ["pico:GND.4", "ldr1:GND", "black", ["v200", "h180"]],
+
+    ["pico:GP18", "ultrasonic1:TRIG", "purple", ["v-40", "h20"]],
+    ["pico:GP19", "ultrasonic1:ECHO", "cyan", ["v-60", "h40"]],
+    ["pico:3V3", "ultrasonic1:VCC", "red", ["v-80", "h60"]],
+    ["pico:GND.5", "ultrasonic1:GND", "black", ["v-100", "h80"]]
+  ]
+}
