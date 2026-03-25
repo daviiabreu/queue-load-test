@@ -51,6 +51,26 @@ Dispositivos / k6
 - Exchange fanout `telemetry.dlx` → fila `telemetry_readings_dlq` (dead-letter)
 - Migrações de schema executadas automaticamente pelo consumer na inicialização (`golang-migrate`)
 
+**Schema PostgreSQL (via migration automática):**
+
+```sql
+CREATE TABLE telemetry_readings (
+    id           BIGSERIAL PRIMARY KEY,
+    device_id    VARCHAR(255) NOT NULL,
+    timestamp    TIMESTAMPTZ  NOT NULL,
+    sensor_type  VARCHAR(100) NOT NULL,
+    reading_type VARCHAR(10)  NOT NULL CHECK (reading_type IN ('analog', 'discrete')),
+    value        DOUBLE PRECISION NOT NULL,
+    created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_telemetry_device_id   ON telemetry_readings (device_id);
+CREATE INDEX idx_telemetry_timestamp   ON telemetry_readings (timestamp);
+CREATE INDEX idx_telemetry_sensor_type ON telemetry_readings (sensor_type);
+```
+
+O `CHECK` no `reading_type` é uma segunda camada de validação — mesmo que a API aceite um valor inválido, o banco rejeita o `INSERT` e a mensagem vai para a DLQ.
+
 ### Decisões técnicas
 
 **Backend (Go):**
@@ -59,6 +79,7 @@ Dispositivos / k6
 - **Prefetch = workers**: o consumer configura `Qos(prefetch_count=workers)` para que cada goroutine tenha no máximo 1 mensagem em processamento, evitando acúmulo em memória
 - **Connection pool (pgxpool)**: o acesso ao PostgreSQL usa pool de conexões via `pgx`, não uma conexão única — suporta paralelismo real entre os workers
 - **Topologia declarada pelo consumer**: exchanges, filas e bindings são declarados automaticamente na inicialização (`declareTopology`), garantindo que a infraestrutura existe antes de começar a consumir
+- **Graceful shutdown**: ambos os serviços capturam `SIGINT`/`SIGTERM`. O producer faz `server.Shutdown()` com timeout de 10 s (drena conexões ativas). O consumer cancela o context e espera todos os workers terminarem via `sync.WaitGroup` — nenhuma mensagem é processada pela metade
 
 **Firmware (Pico W):**
 
